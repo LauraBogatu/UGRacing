@@ -1,0 +1,34 @@
+__author__ = 'lora'
+
+import OpenOPC
+
+class OPC_tag_writer:
+   #opc = OpenOPC.open_client('172.30.170.66')
+    opc = OpenOPC.open_client('localhost')
+    #   opc = OpenOPC.open_client('172.30.170.66')
+    #opc = OpenOPC.client()
+    def __init__(self):
+        self.opc.connect('Matrikon.OPC.Simulation.1', '172.30.170.66')
+    def engine(self):
+        self.opc.write(('UGR15.Engine.RPM', 100.0))
+
+def main():
+
+    writer = OPC_tag_writer()
+
+    f = open('tuner2.txt', 'r')
+    value_position = {2:'RPM', 3:'MAP', 5: 'O2', 6: 'MAT', 7: 'CLT', 17: 'DutyCycle_1_3', 18: 'DutyCycle_2_4'}
+
+    print f
+    for line in f:
+        lines = line.split('\t')
+        for i in range(0,len(lines),1):
+            if(i in value_position.keys()):
+                string = 'UGR15.Engine.' + value_position[i]
+                writer.opc.write((string, float(lines[i])))
+
+
+
+
+if __name__=="__main__":
+    main()
